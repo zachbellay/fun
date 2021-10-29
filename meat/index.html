@@ -21,6 +21,10 @@
     <title>American Meat Consumption</title>
 
     <style>
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             overflow-x: hidden;
             font-family: 'Times New Roman', Times, serif;
@@ -30,6 +34,16 @@
         .slaughtered {
             font-size: 1.5em;
             font-weight: bold;
+        }
+
+        .chicken {
+            font-size: 22vmin;
+        }
+
+        @media (min-width:1281px) {
+            .chicken {
+                font-size: 36vmin;
+            }
         }
 
         @keyframes belt {
@@ -229,12 +243,12 @@
         <div style="height: 750px;"></div>
     </div>
 
-    <div class="chicken text-center" style="font-size: 22vmin;">CHICKEN</div>
+    <div class="chicken text-center">CHICKEN</div>
 
     <div class="container">
         <div class="text-center">
             <div style="font-size: 2em; font-weight: bold;">
-                Chicken consist of the majority of American meat consumption.
+                Chicken consists of the majority of American meat consumption.
             </div>
         </div>
 
@@ -242,7 +256,7 @@
 
         <div class="text-center">
             <div style="font-size: 1.75em;">
-                At 5-8lbs each but 42.2 billion pounds consumed, lots and lots of chickens have to be slaughtered.
+                At 5-8lbs each and 42.2 billion pounds consumed, lots and lots of chickens have to be slaughtered.
             </div>
         </div>
 
