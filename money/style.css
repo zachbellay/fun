@@ -1,5 +1,64 @@
+body{
+  overflow: hidden;
+}
+
 canvas{
   position: fixed;
   top: 0;
   left: 0;
 }
+
+.item-container{
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.item-title{
+  font-size: 5em;
+}
+
+.title-page{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.video-bg,
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    z-index: -1;
+
+    
+}
+
+.video-overlay {
+  background: rgba(0,0,0,0.1);
+  pointer-events: none; /* Allows right clicking on the video to pause etc */
+}
+
+/* .video-bg video {
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
