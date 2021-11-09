@@ -1,12 +1,9 @@
 import './style.css'
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap } from "gsap";
 import $ from "jquery";
-import Stats from 'three/examples/jsm/libs/stats.module'
+// import Stats from 'three/examples/jsm/libs/stats.module'
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 
 
@@ -16,10 +13,11 @@ THREE.Cache.enabled = true;
 let font, scene, camera, renderer;
 var objects = [null];
 
+let one_thousand, ten_thousand;
 
 let index = 0;
-const stats = Stats()
-document.body.appendChild(stats.dom)
+// const stats = Stats()
+// document.body.appendChild(stats.dom)
 
 function init() {
 
@@ -37,18 +35,9 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // create a never ending floor in three.js
-  const floorGeometry = new THREE.PlaneGeometry(10000, 10000, 1, 1);
-  const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, });
-  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-  floor.rotation.x = -Math.PI / 2;
-  scene.add(floor);
-
   // add lighting to threejs scene
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
   scene.add(ambientLight);
-
-  const controls = new OrbitControls(camera, renderer.domElement)
 
 
   // OBJECTS  
@@ -56,17 +45,14 @@ function init() {
   const one_dollar_texture = new THREE.TextureLoader().load('imgs/one_dollar.jpg');
   const one_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_dollar_texture, side: THREE.DoubleSide }));
 
-  one_dollar.rotation.x = -Math.PI / 2;
-  one_dollar.position.y += 0.01;
-
   scene.add(one_dollar);
 
   objects.push({
     "title": "$1",
     "camera_position": {
       "x": 0,
-      "y": 2,
-      "z": 0
+      "y": 0,
+      "z": 2
     },
     "object": one_dollar
   });
@@ -74,8 +60,6 @@ function init() {
   const ten_dollar_texture = new THREE.TextureLoader().load('imgs/ten_dollars.jpg');
   const ten_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: ten_dollar_texture, side: THREE.DoubleSide }));
 
-  ten_dollar.rotation.x = -Math.PI / 2;
-  ten_dollar.position.y += 0.01;
   ten_dollar.position.x = 5;
 
   scene.add(ten_dollar);
@@ -83,8 +67,8 @@ function init() {
     "title": "$10",
     "camera_position": {
       "x": 5,
-      "y": 2,
-      "z": 0
+      "y": 0,
+      "z": 2
     },
     "object": ten_dollar
   });
@@ -92,8 +76,6 @@ function init() {
   const one_hundred_dollar_texture = new THREE.TextureLoader().load('imgs/one_hundred_dollars.jpg');
   const one_hundred_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
 
-  one_hundred_dollar.rotation.x = -Math.PI / 2;
-  one_hundred_dollar.position.y += 0.01;
   one_hundred_dollar.position.x = 10
 
   scene.add(one_hundred_dollar);
@@ -101,26 +83,48 @@ function init() {
     "title": "$100",
     "camera_position": {
       "x": 10,
-      "y": 2,
-      "z": 0
+      "y": 0,
+      "z": 2
     },
     "object": one_hundred_dollar
   });
 
-
   const loader = new GLTFLoader();
+
+  loader.load('gltf/1k.glb', (gltf) => {
+
+    one_thousand = gltf.scene;
+
+    one_thousand.position.x = 15;
+    one_thousand.rotation.x = -Math.PI / 2;
+
+    scene.add(one_thousand);
+    objects.push({
+      "title": "$1,000",
+      "camera_position": {
+        "x": 15,
+        "y": 0,
+        "z": 3
+      },
+      "object": one_thousand
+    });
+
+  });
+
+
   loader.load('gltf/10k.glb', (gltf) => {
-    var ten_thousand = gltf.scene;
-    ten_thousand.position.y = 0.15;
+    ten_thousand = gltf.scene;
+
     ten_thousand.position.x = 20;
+    ten_thousand.rotation.x = -Math.PI / 2;
 
     scene.add(ten_thousand);
     objects.push({
       "title": "$10,000",
       "camera_position": {
         "x": 20,
-        "y": 2,
-        "z": 1.5
+        "y": 0,
+        "z": 3
       },
       "object": ten_thousand
     });
@@ -133,9 +137,11 @@ function init() {
 
 
 
+
+
   // set initial camera position and rotation
-  camera.position.y = 2;
-  camera.lookAt(one_dollar.position);
+  camera.position.z = 2;
+  // camera.lookAt(one_dollar.position);
 
 
 
@@ -146,8 +152,21 @@ function init() {
 
 const animate = () => {
   requestAnimationFrame(animate);
-  stats.update()
+  // stats.update()
+  const canvas = renderer.domElement;
+  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  camera.updateProjectionMatrix();
   renderer.render(scene, camera);
+
+  if (one_thousand) {
+    one_thousand.rotation.z += 0.02;
+  }
+
+  if (ten_thousand) {
+    ten_thousand.rotation.z += 0.02;
+  }
+
+
 };
 
 
@@ -157,6 +176,8 @@ animate();
 
 
 $(document).on('keyup', function (event) {
+  console.log(objects);
+
   if (event.keyCode === 39 && index < objects.length - 1) {
     index++;
   } else if (event.keyCode === 37 && index > 0) {
@@ -167,10 +188,13 @@ $(document).on('keyup', function (event) {
   if (index < 0) {
     index = 0;
   }
+  console.log(index);
 
   if (index > 0) {
-    $(".title-page").css("display", "none");
+    // $(".title-page").css("display", "none");
+    $(".title-page").css("left", "-100%");
     $(".item-title").text(objects[index].title);
+    // $("#app").toggle('slide', { direction: 'right' }, 500);
 
     let x = objects[index].camera_position.x;
     let y = objects[index].camera_position.y;
@@ -184,133 +208,17 @@ $(document).on('keyup', function (event) {
       ease: "power1.inOut",
     });
 
-    const startOrientation = camera.quaternion.clone();
-    const targetOrientation = objects[index].object.quaternion.clone().normalize();
-
-    console.log('xyz: ', x, y, z);
-    console.log(startOrientation, targetOrientation);
-
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromAxisAngle(new THREE.Vector3(x, y, z), 0);
-
-    console.log(quaternion.angleTo(targetOrientation) * (180 / Math.PI));
-
-
-    // camera.lookAt(ten_thousand);
-    // 
-    //  look at this https://jsfiddle.net/fungus1487/SMLwa/  
-    //  to figure out how to smoothly use camera.lookat
-    // 
-    // 
-    // 
-
-
-    gsap.to({}, {
-      duration: 0.5,
-      onUpdate: function () {
-        camera.quaternion.copy(startOrientation).slerp(targetOrientation, this.progress());
-      },
-      ease: 'expo.inOut'
-    });
-
-    // console.log("camera: " + x + " " + y + " " + z);
-    // console.log("object: " + objects[index].object.position.x + " " + objects[index].object.position.y + " " + objects[index].object.position.z);
-
-
-    // gsap.to(camera.rotation, {
-    //   duration: 0.5,
-    //   x: objects[index].camera_rotation.x,
-    //   y: objects[index].camera_rotation.y,
-    //   z: objects[index].camera_rotation.z,
-    //   ease: "power1.inOut"
-    // });
-
-    // gsap.to(camera.rotation, {
-    //   duration: 0.5,
-    //   x: objects[index].camera_rotation.x,
-    //   y: objects[index].camera_rotation.y,
-    //   z: objects[index].camera_rotation.z,
-    //   ease: "power1.inOut"
-    // });
-
-
   } else if (index == 0) {
-    $(".title-page").css("display", "");
+    // $(".title-page").css("display", "");
+    $(".title-page").css("left", "0px");
   }
-
-
-
-
 });
 
 // on right click log the coordinates of the camera position
-// $(document).on('click', () => {
-//   console.log(camera.position);
-//   console.log(camera.quaternion);
-//   console.log(camera.rotation);
-// });
-
-// var objects = [
-//   null,
-//   {
-//     "title": "$1",
-//     "camera_position": {
-//       "x": 0,
-//       "y": 2,
-//       "z": 0
-//     }
-//   },
-//   {
-//     "title": "$10",
-//     "camera_position": {
-//       "x": 5,
-//       "y": 2,
-//       "z": 0
-//     }
-//   },
-//   {
-//     "title": "$100",
-//     "camera_position": {
-//       "x": 10,
-//       "y": 2,
-//       "z": 0
-//     },
-//   },
-//   {
-//     "title": "$1000",
-//     "camera_position": {
-//       "x": 15,
-//       "y": 2,
-//       "z": 0
-//     }
-//   },
-//   {
-//     "title": "$10,000",
-//     "camera_position": {
-//       "x": 20,
-//       "y": 2,
-//       "z": 1.5
-//     }
-//   },
-//   {
-//     "title": "$100,000",
-//     "camera_position": {
-//       "x": 20,
-//       "y": 2,
-//       "z": 0
-//     }
-//   },
-
-// ];
-
-
-
-
-
-
-
-
-
-
+$(document).on('click', () => {
+  console.log(camera.position);
+  console.log(camera.quaternion);
+  console.log(camera.rotation);
+});
 
 $(".item-title").text(objects[index].title);
