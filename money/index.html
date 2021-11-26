@@ -19,47 +19,54 @@
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
 
 
-  <title>The Scale of Money</title>
+  <title>The Scale of Wealth</title>
 </head>
 
 <body>
-  <canvas id="app"></canvas>
 
-  <div class="item-container">
-    <div class="item-title">
-    </div>
+  <div class="page-loader">
+    <div class="loader">Loading...</div>
   </div>
 
-  <div class="title-page">
-    <div class="video-bg">
-      <video autoplay loop muted>
-        <source src="videos/money.mp4" type="video/mp4">
-      </video>
+  <div id="app-container" style="width:100vw; height:100vh; z-index: 10001;">
+    <canvas id="app"></canvas>
+
+    <div class="item-container">
+      <div class="item-title"></div>
+      <div class="item-description"></div>
     </div>
 
-    <a class="main-page-link" href="https://zach.ws">zach.ws</a>
-    <div class="video-overlay container h-100">
+    <div class="title-page">
+      <div class="video-bg">
+        <video autoplay loop muted>
+          <source src="videos/money.mp4" type="video/mp4">
+        </video>
+      </div>
 
-      <div class=" h-100 d-flex justify-content-center align-items-center">
-        <div class="text-center">
-          <h1 class="title-font">The Scale of Money</h1>
-          <h4 class="subtitle-font">Created by Zach Bellay</h4>
+      <a class="main-page-link" href="https://zach.ws">zach.ws</a>
+      <div class="video-overlay container h-100">
+
+        <div class=" h-100 d-flex justify-content-center align-items-center">
+          <div class="text-center">
+            <h1 class="title-font">The Scale of Wealth</h1>
+            <h4 class="subtitle-font">Created by Zach Bellay</h4>
+          </div>
 
         </div>
 
       </div>
 
+      <h5 class="go-right">Press the right arrow key or swipe left to continue ➔</h5>
+
     </div>
-
-    <h5 class="go-right">Press the right arrow key or swipe left to begin ➔</h5>
-
   </div>
 
 
-  <script type="module" src="/main.js"></script>
 </body>
+
+<script type="module" src="/main.js"></script>
 
 </html>

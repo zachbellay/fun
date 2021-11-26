@@ -6,11 +6,12 @@ canvas{
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .item-container{
   position: absolute;
-  top: 120px;
   left: 50%;
   margin-left: auto;
   margin-right: auto;
@@ -22,9 +23,43 @@ canvas{
 
 .item-title{
   font-family: 'Roboto', sans-serif;
-  font-size: 5em;
   color: white;
 }
+
+.item-description{
+  font-family: 'Roboto', sans-serif;
+  font-size: 2em;
+  color: white;
+}
+
+@media screen and (min-width: 1090px) {
+  .item-title{
+    font-size: 5em;
+  }
+
+  .item-description{
+    font-size: 3.5em;
+  }
+
+  .item-container{
+    top: 5em;
+  }
+}
+@media screen and (max-width: 1089px) {
+  .item-title{
+    font-size: 2em;
+    font-weight: bold;
+  }
+  .item-description{
+    font-size: 2.5em;
+  }
+
+  .item-container{
+    top: 10em;
+  }
+}
+
+
 
 .title-page{
   position: absolute;
@@ -88,6 +123,7 @@ canvas{
   opacity: 1;
   animation: fade 2s infinite;
   animation-timing-function: quadratic;
+  cursor: pointer;
 }
 
 
@@ -113,4 +149,94 @@ video {
   bottom: 0;
   min-width: 100%;
   min-height: 100%;
+}
+
+#app-container{
+  cursor: default;
+}
+
+
+/*--------------------------------------------------------------
+	Preloader
+--------------------------------------------------------------*/
+.page-loader {
+  position: fixed;
+  /*background: #000;*/
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  z-index: 9998;
+  background: linear-gradient(315deg, #8b0000, #ffcc33);
+  background-size: 400% 400%;
+
+  -webkit-animation: loadbg 3s ease infinite;
+  -moz-animation: loadbg 3s ease infinite;
+  animation: loadbg 3s ease infinite;
+}
+
+@-webkit-keyframes loadbg {
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+}
+@-moz-keyframes loadbg {
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+}
+@keyframes loadbg { 
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+}
+
+.loader {
+  position: absolute;
+  border-left: 2px solid #ffffff;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  height: 46px;
+  width: 46px;
+  left: 50%;
+  top: 50%;
+  margin: -23px 0 0 -23px;
+  text-indent: -9999em;
+  font-size: 10px;
+  z-index: 9999;
+  -webkit-animation: load 0.8s infinite linear;
+  -moz-animation: load 0.8s infinite linear;
+  ms-animation: load 0.8s infinite linear;
+  o-animation: load 0.8s infinite linear;
+  animation: load 0.8s infinite linear;
+}
+
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+}
+
+@-webkit-keyframes load {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes load {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
