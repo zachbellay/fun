@@ -4,9 +4,20 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap } from "gsap";
 import $ from "jquery";
 // import Stats from 'three/examples/jsm/libs/stats.module'
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import Swipe from 'swipejs';
+
+console.log(import.meta.env.BASE_URL);
+
+// if (import.meta.env.BASE_URL == "/") {
+//   import.meta.env.BASE_URL = "";
+// }
+
+var BASE = import.meta.env.BASE_URL;
+if (BASE == "/") {
+  BASE = "";
+}
+console.log('base' + BASE);
 
 // const stats = Stats();
 // document.body.appendChild(stats.dom)
@@ -27,30 +38,58 @@ let one_thousand,
   twenty_five_thousand,
   forty_five_thousand,
   sixty_five_thousand,
-  seventy_five_thousand,
-  one_hundred_thousand,
-  three_hundred_fifty_thousand;
+  three_hundred_fifty_thousand,
+  one_million,
+  three_million_five_hundred_thousand,
+  six_million,
+  eighty_million,
+  human_1,
+  four_forty_million,
+  one_p_four_billion,
+  one_p_eight_billion,
+  seventy_billion,
+  ninety_five_billion,
+  one_thirty_four_billion,
+  one_ninety_billion,
+  two_hundred_one_billion,
+  two_hundred_nine_billion,
+  two_hundred_seventy_three_billion,
+  seven_hundred_five_billion,
+  one_p_three_trillion,
+  one_p_seven_five_trillion,
+  two_p_one_trillion,
+  three_p_four_trillion,
+  four_p_five_trillion,
+  twenty_one_p_eigthy_five_trillion,
+  twenty_eight_p_fifty_trillion,
+  thirty_three_trillion,
+  thirty_four_trillion,
+  forty_three_trillion,
+  forty_eight_trillion,
+  three_hundred_sixty_trillion,
+  one_quadrillion,
+  eleven_quadrillion;
 
 let startPos = 0;
 let isDragging = false;
 let currentTranslate = 0,
   prevTranslate = 0;
 
-let index = 20;
+let index = 0;
 let prev_index = -1;
 
 function modelLoader(url) {
-
+  
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
-    loader.load(url, data => resolve(data), null, reject);
+    loader.load(BASE + url, data => resolve(data), null, reject);
   });
 }
 
 async function init() {
 
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 30000);
   camera.position.z = 15;
   camera.position.x = -5;
 
@@ -79,7 +118,7 @@ async function init() {
 
   // COFFEE -- $1
 
-  const one_dollar_texture = new THREE.TextureLoader().load('/one_dollar.jpg');
+  const one_dollar_texture = new THREE.TextureLoader().load(BASE + '/one_dollar.jpg');
   const one_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_dollar_texture, side: THREE.DoubleSide }));
 
   scene.add(one_dollar);
@@ -95,52 +134,13 @@ async function init() {
     "object": one_dollar
   });
 
-  // COKE -- $2
-
-  const two_dollar_texture = new THREE.TextureLoader().load('/two_dollars.jpg');
-  const two_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: two_dollar_texture, side: THREE.DoubleSide }));
-
-  two_dollar.position.x = 3;
-
-  scene.add(two_dollar);
-
-  objects.push({
-    "title": "Bottle of Coca-Cola",
-    "description": "$2",
-    "camera_position": {
-      "x": two_dollar.position.x,
-      "y": 0,
-      "z": 3
-    },
-    "object": two_dollar
-  });
-
-  // CHIK-FIL-A NUGGETS - $5
-
-  const five_dollar_texture = new THREE.TextureLoader().load('/five_dollars.jpg');
-  const five_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: five_dollar_texture, side: THREE.DoubleSide }));
-
-  five_dollar.position.x = 6;
-
-  scene.add(five_dollar);
-
-  objects.push({
-    "title": "Chik-fil-A Nuggets",
-    "description": "$5",
-    "camera_position": {
-      "x": five_dollar.position.x,
-      "y": 0,
-      "z": 3
-    },
-    "object": five_dollar
-  });
 
   // CHIPOTLE STEAK BURRITO -- $10
 
-  const ten_dollar_texture = new THREE.TextureLoader().load('/ten_dollars.jpg');
+  const ten_dollar_texture = new THREE.TextureLoader().load(BASE + '/ten_dollars.jpg');
   const ten_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: ten_dollar_texture, side: THREE.DoubleSide }));
 
-  ten_dollar.position.x = 9;
+  ten_dollar.position.x = 3;
 
   scene.add(ten_dollar);
   objects.push({
@@ -154,50 +154,14 @@ async function init() {
     "object": ten_dollar
   });
 
-  // OLD NAVY GRAPHIC TEE -- $20
-
-  const twenty_dollar_texture = new THREE.TextureLoader().load('/twenty_dollars.jpg');
-  const twenty_dollars = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: twenty_dollar_texture, side: THREE.DoubleSide }));
-
-  twenty_dollars.position.x = 12;
-
-  scene.add(twenty_dollars);
-  objects.push({
-    "title": "Old Navy Graphic Tee",
-    "description": "$20",
-    "camera_position": {
-      "x": twenty_dollars.position.x,
-      "y": 0,
-      "z": 3
-    },
-    "object": twenty_dollars
-  });
-
-  // DELUXE MANICURE -- $50
-
-  const fifty_dollar_texture = new THREE.TextureLoader().load('/fifty_dollars.jpg');
-  const fifty_dollars = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: fifty_dollar_texture, side: THREE.DoubleSide }));
-
-  fifty_dollars.position.x = 15;
-
-  scene.add(fifty_dollars);
-  objects.push({
-    "title": "Deluxe Manicure",
-    "description": "$50",
-    "camera_position": {
-      "x": fifty_dollars.position.x,
-      "y": 0,
-      "z": 3
-    },
-    "object": fifty_dollars
-  });
+  const fifty_dollar_texture = new THREE.TextureLoader().load(BASE + '/fifty_dollars.jpg');
 
   // ALL BIRDS -- $100
 
-  const one_hundred_dollar_texture = new THREE.TextureLoader().load('imgs/one_hundred_dollars.jpg');
+  const one_hundred_dollar_texture = new THREE.TextureLoader().load(BASE + '/one_hundred_dollars.jpg');
   const one_hundred_dollar = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
 
-  one_hundred_dollar.position.x = 18
+  one_hundred_dollar.position.x = 6
 
   scene.add(one_hundred_dollar);
   objects.push({
@@ -211,275 +175,19 @@ async function init() {
     "object": one_hundred_dollar
   });
 
-  const one_hundred_dollar_250_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_250_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const fifty_dollars_250 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: fifty_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_250_1.position.y = -0.25;
-  one_hundred_dollar_250_1.position.x = -0.25;
-
-  fifty_dollars_250.position.x = 0.25;
-  fifty_dollars_250.position.y = 0.25;
-
-  const two_fifty_group = new THREE.Group();
-
-  two_fifty_group.add(one_hundred_dollar_250_1);
-  two_fifty_group.add(one_hundred_dollar_250_2);
-  two_fifty_group.add(fifty_dollars_250);
-
-  two_fifty_group.position.x = 21;
-
-  scene.add(two_fifty_group);
-
-  objects.push({
-    "title": "Airpods Pros",
-    "description": "$250",
-    "camera_position": {
-      "x": two_fifty_group.position.x,
-      "y": 0,
-      "z": 4
-    },
-    "object": two_fifty_group
-  });
-
-  // BOSE HEADPHONES -- $380
-
-  const one_hundred_dollar_380_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_380_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_380_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const fifty_dollars_380 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: fifty_dollar_texture, side: THREE.DoubleSide }));
-  const ten_dollar_380_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: ten_dollar_texture, side: THREE.DoubleSide }));
-  const ten_dollar_380_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: ten_dollar_texture, side: THREE.DoubleSide }));
-  const ten_dollar_380_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: ten_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_380_1.position.y = -0.5;
-  one_hundred_dollar_380_1.position.x = -0.5;
-  one_hundred_dollar_380_2.position.y = -0.333;
-  one_hundred_dollar_380_2.position.x = -0.333;
-  one_hundred_dollar_380_3.position.y = -0.166;
-  one_hundred_dollar_380_3.position.x = -0.166;
-
-  ten_dollar_380_3.position.y = 0.5;
-  ten_dollar_380_3.position.x = 0.5;
-  ten_dollar_380_2.position.y = 0.333;
-  ten_dollar_380_2.position.x = 0.333;
-  ten_dollar_380_1.position.y = 0.166;
-  ten_dollar_380_1.position.x = 0.166;
-
-  const three_eighty_group = new THREE.Group();
-
-  three_eighty_group.add(one_hundred_dollar_380_1);
-  three_eighty_group.add(one_hundred_dollar_380_2);
-  three_eighty_group.add(one_hundred_dollar_380_3);
-  three_eighty_group.add(fifty_dollars_380);
-  three_eighty_group.add(ten_dollar_380_1);
-  three_eighty_group.add(ten_dollar_380_2);
-  three_eighty_group.add(ten_dollar_380_3);
-
-  three_eighty_group.position.x = 25;
-
-  scene.add(three_eighty_group);
-
-  objects.push({
-    "title": "Bose Headphones",
-    "description": "$380",
-    "camera_position": {
-      "x": three_eighty_group.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": three_eighty_group
-  });
 
 
-  // COACHELLA TICKET -- $450
-
-  const one_hundred_dollar_450_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_450_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_450_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_450_4 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const fifty_dollars_450 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: fifty_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_450_1.position.y = -0.5;
-  one_hundred_dollar_450_1.position.x = -0.5;
-  one_hundred_dollar_450_2.position.y = -0.25;
-  one_hundred_dollar_450_2.position.x = -0.25;
-
-  one_hundred_dollar_450_4.position.y = 0.25;
-  one_hundred_dollar_450_4.position.x = 0.25;
-  fifty_dollars_450.position.y = 0.5;
-  fifty_dollars_450.position.x = 0.5;
-
-  const four_fifty = new THREE.Group();
-
-  four_fifty.add(one_hundred_dollar_450_1);
-  four_fifty.add(one_hundred_dollar_450_2);
-  four_fifty.add(one_hundred_dollar_450_3);
-  four_fifty.add(one_hundred_dollar_450_4);
-  four_fifty.add(fifty_dollars_450);
-
-  four_fifty.position.x = 29;
-
-  scene.add(four_fifty);
-
-  objects.push({
-    "title": "Coachella Pass",
-    "description": "$450",
-    "camera_position": {
-      "x": four_fifty.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": four_fifty
-  });
-
-  // GUCCI BELT -- $500
-  const one_hundred_dollar_500_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_500_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_500_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_500_4 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_500_5 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_500_1.position.y = -0.5;
-  one_hundred_dollar_500_1.position.x = -0.5;
-  one_hundred_dollar_500_2.position.y = -0.25;
-  one_hundred_dollar_500_2.position.x = -0.25;
-  one_hundred_dollar_500_4.position.y = 0.25;
-  one_hundred_dollar_500_4.position.x = 0.25;
-  one_hundred_dollar_500_5.position.y = 0.5;
-  one_hundred_dollar_500_5.position.x = 0.5;
-
-  const five_hundred = new THREE.Group();
-  five_hundred.add(one_hundred_dollar_500_1);
-  five_hundred.add(one_hundred_dollar_500_2);
-  five_hundred.add(one_hundred_dollar_500_3);
-  five_hundred.add(one_hundred_dollar_500_4);
-  five_hundred.add(one_hundred_dollar_500_5);
-
-  five_hundred.position.x = 33;
-
-  scene.add(five_hundred);
-
-  objects.push({
-    "title": "Gucci Belt",
-    "description": "$500",
-    "camera_position": {
-      "x": five_hundred.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": five_hundred
-  });
-
-  // 70 INCH 4K TV -- $650
-  const one_hundred_dollar_650_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_650_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_650_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_650_4 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_650_5 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_650_6 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const fifty_dollars_650 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: fifty_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_650_1.position.y = -0.5;
-  one_hundred_dollar_650_1.position.x = -0.5;
-  one_hundred_dollar_650_2.position.y = -0.333;
-  one_hundred_dollar_650_2.position.x = -0.333;
-  one_hundred_dollar_650_3.position.y = -0.166;
-  one_hundred_dollar_650_3.position.x = -0.166;
-  one_hundred_dollar_650_5.position.y = 0.166;
-  one_hundred_dollar_650_5.position.x = 0.166;
-  one_hundred_dollar_650_6.position.y = 0.333;
-  one_hundred_dollar_650_6.position.x = 0.333;
-  fifty_dollars_650.position.y = 0.5;
-  fifty_dollars_650.position.x = 0.5;
-
-  const six_fifty = new THREE.Group();
-  six_fifty.add(one_hundred_dollar_650_1);
-  six_fifty.add(one_hundred_dollar_650_2);
-  six_fifty.add(one_hundred_dollar_650_3);
-  six_fifty.add(one_hundred_dollar_650_4);
-  six_fifty.add(one_hundred_dollar_650_5);
-  six_fifty.add(one_hundred_dollar_650_6);
-  six_fifty.add(fifty_dollars_650);
-
-  six_fifty.position.x = 37;
-
-  scene.add(six_fifty);
-
-  objects.push({
-    "title": "70\" 4K Flatscreen TV",
-    "description": "$650",
-    "camera_position": {
-      "x": six_fifty.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": six_fifty
-  });
-
-  // iPhone 13 -- $800
-  const one_hundred_dollar_800_1 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_2 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_3 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_4 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_5 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_6 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_7 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-  const one_hundred_dollar_800_8 = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 1), new THREE.MeshBasicMaterial({ map: one_hundred_dollar_texture, side: THREE.DoubleSide }));
-
-  one_hundred_dollar_800_1.position.y = -0.5;
-  one_hundred_dollar_800_1.position.x = -0.5;
-  one_hundred_dollar_800_2.position.y = -0.3571;
-  one_hundred_dollar_800_2.position.x = -0.3571;
-  one_hundred_dollar_800_3.position.y = -0.2142;
-  one_hundred_dollar_800_3.position.x = -0.2142;
-  one_hundred_dollar_800_4.position.y = -0.0714;
-  one_hundred_dollar_800_4.position.x = -0.0714;
-  one_hundred_dollar_800_5.position.y = 0.0714;
-  one_hundred_dollar_800_5.position.x = 0.0714;
-  one_hundred_dollar_800_6.position.y = 0.2142;
-  one_hundred_dollar_800_6.position.x = 0.2142;
-  one_hundred_dollar_800_7.position.y = 0.3751;
-  one_hundred_dollar_800_7.position.x = 0.3751;
-  one_hundred_dollar_800_8.position.y = 0.5;
-  one_hundred_dollar_800_8.position.x = 0.5;
-
-  const eight_hundred = new THREE.Group();
-  eight_hundred.add(one_hundred_dollar_800_1);
-  eight_hundred.add(one_hundred_dollar_800_2);
-  eight_hundred.add(one_hundred_dollar_800_3);
-  eight_hundred.add(one_hundred_dollar_800_4);
-  eight_hundred.add(one_hundred_dollar_800_5);
-  eight_hundred.add(one_hundred_dollar_800_6);
-  eight_hundred.add(one_hundred_dollar_800_7);
-  eight_hundred.add(one_hundred_dollar_800_8);
-
-  eight_hundred.position.x = 41;
-
-  scene.add(eight_hundred);
-
-  objects.push({
-    "title": "iPhone 13",
-    "description": "$800",
-    "camera_position": {
-      "x": eight_hundred.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": eight_hundred
-  });
-
-  // Mont Blanc -- $1000
+  // Macbook Air -- $1000
 
   var one_thousand_gltf = await modelLoader('/1k.glb');
   one_thousand = one_thousand_gltf.scene;
 
-  one_thousand.position.x = 45;
+  one_thousand.position.x = 9;
   one_thousand.rotation.x = -Math.PI / 2;
 
   scene.add(one_thousand);
   objects.push({
-    "title": "Montblanc Pen",
+    "title": "Macbook Air",
     "description": "$1,000",
     "camera_position": {
       "x": one_thousand.position.x,
@@ -489,52 +197,12 @@ async function init() {
     "object": one_thousand
   });
 
-  // Macbook Pro -- $2000
-
-  var two_thousand_gltf = await modelLoader('/2k.glb');
-  two_thousand = two_thousand_gltf.scene;
-
-  two_thousand.position.x = 49;
-  two_thousand.rotation.x = -Math.PI / 2;
-
-  scene.add(two_thousand);
-  objects.push({
-    "title": "Macbook Pro",
-    "description": "$2,000",
-    "camera_position": {
-      "x": two_thousand.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": two_thousand
-  });
-
-  // 1 Year CC -- $5K
-
-  var five_thousand_gltf = await modelLoader('/5k.glb');
-  five_thousand = five_thousand_gltf.scene;
-
-  five_thousand.position.x = 53;
-  five_thousand.rotation.x = -Math.PI / 2;
-
-  scene.add(five_thousand);
-  objects.push({
-    "title": "1 Year Community College",
-    "description": "$5,000",
-    "camera_position": {
-      "x": five_thousand.position.x,
-      "y": 0,
-      "z": 5
-    },
-    "object": five_thousand
-  });
-
   // $10k Plane Ticket lmao -- $10K
 
   var ten_thousand_gltf = await modelLoader('/10k.glb');
   ten_thousand = ten_thousand_gltf.scene;
 
-  ten_thousand.position.x = 57;
+  ten_thousand.position.x = 12;
   ten_thousand.rotation.x = -Math.PI / 2;
 
   scene.add(ten_thousand);
@@ -549,75 +217,14 @@ async function init() {
     "object": ten_thousand
   });
 
-  // birkin bag -- $15k
 
-  var fifteen_thousand_gltf = await modelLoader('/15k.glb');
-
-  fifteen_thousand = fifteen_thousand_gltf.scene;
-
-  fifteen_thousand.position.x = 61;
-  fifteen_thousand.rotation.x = -Math.PI / 2;
-
-  scene.add(fifteen_thousand);
-  objects.push({
-    "title": "Birkin Bag",
-    "description": "$15,000",
-    "camera_position": {
-      "x": fifteen_thousand.position.x,
-      "y": 0,
-      "z": 6
-    },
-    "object": fifteen_thousand
-  });
-
-  // 1 Year In State Tuition -- $25K
-
-  var twenty_five_thousand_gltf = await modelLoader('/25k.glb');
-
-  twenty_five_thousand = twenty_five_thousand_gltf.scene;
-
-  twenty_five_thousand.position.x = 65;
-  twenty_five_thousand.rotation.x = -Math.PI / 2;
-
-  scene.add(twenty_five_thousand);
-  objects.push({
-    "title": "1 Year In-State Tuition",
-    "description": "$25,000",
-    "camera_position": {
-      "x": twenty_five_thousand.position.x,
-      "y": 0,
-      "z": 6
-    },
-    "object": twenty_five_thousand
-  });
-
-  // Avg. New Car USA -- $45K
-
-  var forty_five_thousand_gltf = await modelLoader('/45k.glb');
-
-  forty_five_thousand = forty_five_thousand_gltf.scene;
-
-  forty_five_thousand.position.x = 69;
-  forty_five_thousand.rotation.x = -Math.PI / 2;
-
-  scene.add(forty_five_thousand);
-  objects.push({
-    "title": "Avg. New Car Price",
-    "description": "$45,000",
-    "camera_position": {
-      "x": forty_five_thousand.position.x,
-      "y": 0,
-      "z": 6
-    },
-    "object": forty_five_thousand
-  });
 
   // Median US Household Income -- $65k
-  var sixty_five_thousand_gltf = await modelLoader('/65k.glb');
+  var sixty_five_thousand_gltf = await modelLoader('/65k_cube.glb');
 
   sixty_five_thousand = sixty_five_thousand_gltf.scene;
 
-  sixty_five_thousand.position.x = 73;
+  sixty_five_thousand.position.x = 16;
   sixty_five_thousand.rotation.x = -Math.PI / 2;
 
   scene.add(sixty_five_thousand);
@@ -627,81 +234,22 @@ async function init() {
     "camera_position": {
       "x": sixty_five_thousand.position.x,
       "y": 0,
-      "z": 8.5
+      "z": 6
     },
     "object": sixty_five_thousand
   });
 
-  // 1 Year Tuition at Harvard
-  var seventy_five_thousand_gltf = await modelLoader('/75k.glb');
 
-  seventy_five_thousand = seventy_five_thousand_gltf.scene;
+  // House -- $350K
 
-  seventy_five_thousand.position.x = 77;
-  seventy_five_thousand.rotation.x = -Math.PI / 2;
+  var three_hundred_fifty_gltf = await modelLoader('/350k_cube.glb');
 
-  scene.add(seventy_five_thousand);
-  objects.push({
-    "title": "1 Year Tuition at Harvard",
-    "description": "$75,000",
-    "camera_position": {
-      "x": seventy_five_thousand.position.x,
-      "y": 0,
-      "z": 8.5
-    },
-    "object": seventy_five_thousand
-  });
+  three_hundred_fifty_thousand = three_hundred_fifty_gltf.scene;
 
-  // Tesla Model X -- $100k
-
-  var one_hundred_thousand_gltf = await modelLoader('/100k_cube.glb');
-  one_hundred_thousand = one_hundred_thousand_gltf.scene;
-  one_hundred_thousand.position.x = 81;
-  one_hundred_thousand.rotation.x = -Math.PI / 2;
-  one_hundred_thousand.position.z = 0;
-
-  scene.add(one_hundred_thousand);
-
-  objects.push({
-    "title": "Tesla Model X",
-    "description": "$100,000",
-    "camera_position": {
-      "x": one_hundred_thousand.position.x,
-      "y": 0.25,
-      "z": 8.5
-    },
-    "object": one_hundred_thousand
-  });
-
-  // Median Home US -- $350K
-  var fifty_thousand_gltf = await modelLoader('/100k_cube.glb');
-  var fifty_thousand = fifty_thousand_gltf.scene;
-  var one_hundred_thousand_350_1 = one_hundred_thousand.clone();
-  var one_hundred_thousand_350_2 = one_hundred_thousand.clone();
-  var one_hundred_thousand_350_3 = one_hundred_thousand.clone();
-
-  one_hundred_thousand_350_1.position.x = 0;
-  one_hundred_thousand_350_1.position.z = -1;
-
-  one_hundred_thousand_350_2.position.x = 0;
-
-  one_hundred_thousand_350_3.position.x = 0;
-  one_hundred_thousand_350_3.position.z = 1;
-
-  fifty_thousand.position.z = -1.5;
-  fifty_thousand.rotation.x = -Math.PI / 2;
-
-  three_hundred_fifty_thousand = new THREE.Group();
-  three_hundred_fifty_thousand.add(one_hundred_thousand_350_1);
-  three_hundred_fifty_thousand.add(one_hundred_thousand_350_2);
-  three_hundred_fifty_thousand.add(one_hundred_thousand_350_3);
-  three_hundred_fifty_thousand.add(fifty_thousand);
-
-  three_hundred_fifty_thousand.position.x = 85;
+  three_hundred_fifty_thousand.position.x = 22;
+  three_hundred_fifty_thousand.rotation.x = -Math.PI / 2;
 
   scene.add(three_hundred_fifty_thousand);
-  console.log(three_hundred_fifty_thousand)
-  console.log(three_hundred_fifty_thousand.position.x);
 
   objects.push({
     "title": "Median US Home Price",
@@ -709,10 +257,636 @@ async function init() {
     "camera_position": {
       "x": three_hundred_fifty_thousand.position.x,
       "y": 0,
-      "z": 8.5
+      "z": 12
     },
     "object": three_hundred_fifty_thousand
   });
+
+  // Janitor Lifetime Earnings -- $1M
+
+  var one_million_gltf = await modelLoader('/1M_cube.glb');
+
+  one_million = one_million_gltf.scene;
+
+  one_million.position.x = 29;
+  one_million.rotation.x = -Math.PI / 2;
+
+  scene.add(one_million);
+
+  objects.push({
+    "title": "Janitor Lifetime Earnings",
+    "description": "$1,000,000",
+    "camera_position": {
+      "x": one_million.position.x,
+      "y": 0,
+      "z": 15
+    },
+    "object": one_million
+  });
+
+  var three_million_five_hundred_thousand_gltf = await modelLoader('/3p5M_cube.glb');
+
+  three_million_five_hundred_thousand = three_million_five_hundred_thousand_gltf.scene;
+
+  three_million_five_hundred_thousand.position.x = 40;
+  three_million_five_hundred_thousand.rotation.x = -Math.PI / 2;
+
+  scene.add(three_million_five_hundred_thousand);
+
+  objects.push({
+    "title": "Software Engineer Lifetime Earnings",
+    "description": "$3,500,000",
+    "camera_position": {
+      "x": three_million_five_hundred_thousand.position.x,
+      "y": 0,
+      "z": 16
+    },
+    "object": three_million_five_hundred_thousand
+  });
+
+  var six_million_gltf = await modelLoader('/6M_cube.glb');
+
+  six_million = six_million_gltf.scene;
+
+  six_million.position.x = 53;
+  six_million.rotation.x = -Math.PI / 2;
+
+  scene.add(six_million);
+
+  objects.push({
+    "title": "Doctor Lifetime Earnings",
+    "description": "$6,200,000",
+    "camera_position": {
+      "x": six_million.position.x,
+      "y": 0,
+      "z": 17
+    },
+    "object": six_million
+  });
+
+
+  var eighty_million_gltf = await modelLoader('/80M_cube.glb');
+
+  eighty_million = eighty_million_gltf.scene;
+
+  eighty_million.position.x = 80;
+  eighty_million.rotation.x = -Math.PI / 2;
+
+  scene.add(eighty_million);
+
+  objects.push({
+    "title": "Walter White Meth Profits",
+    "description": "$80,000,000",
+    "camera_position": {
+      "x": eighty_million.position.x,
+      "y": 0,
+      "z": 50
+    },
+    "object": eighty_million
+  });
+
+  var human_1_gltf = await modelLoader('/human.glb');
+
+  human_1 = human_1_gltf.scene;
+
+  human_1.position.x = 110;
+  human_1.position.y = 9;
+  human_1.rotation.x = -Math.PI / 2;
+  human_1.rotation.z = Math.PI;
+
+  scene.add(human_1);
+
+  objects.push({
+    "title": "Human",
+    "description": "5' 10\"",
+    "camera_position": {
+      "x": human_1.position.x,
+      "y": 0,
+      "z": 75
+    },
+    "object": human_1
+  });
+
+  var four_forty_million_gltf = await modelLoader('/440M_cube.glb');
+
+  four_forty_million = four_forty_million_gltf.scene;
+
+  four_forty_million.position.x = 160;
+  // four_forty_million.position.y = 4;
+  four_forty_million.rotation.x = -Math.PI / 2;
+
+  scene.add(four_forty_million);
+
+  objects.push({
+    "title": "Beyonce Net Worth",
+    "description": "$440,000,000",
+    "camera_position": {
+      "x": four_forty_million.position.x,
+      "y": 0,
+      "z": 95
+    },
+    "object": four_forty_million
+  });
+
+  var one_p_four_billion_gltf = await modelLoader('/1_40B.glb');
+
+  one_p_four_billion = one_p_four_billion_gltf.scene;
+
+  one_p_four_billion.position.x = 230;
+  one_p_four_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_p_four_billion);
+
+  objects.push({
+    "title": "Jay-Z Net Worth",
+    "description": "$1,400,000,000",
+    "camera_position": {
+      "x": one_p_four_billion.position.x,
+      "y": 0,
+      "z": 110
+    },
+    "object": one_p_four_billion
+  });
+
+  var one_p_eight_billion_gltf = await modelLoader('/1_80B.glb');
+
+  one_p_eight_billion = one_p_eight_billion_gltf.scene;
+
+  one_p_eight_billion.position.x = 320;
+  one_p_eight_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_p_eight_billion);
+
+  objects.push({
+    "title": "Kanye West Net Worth",
+    "description": "$1,800,000,000",
+    "camera_position": {
+      "x": one_p_eight_billion.position.x,
+      "y": 0,
+      "z": 120
+    },
+    "object": one_p_eight_billion
+  });
+
+  var seventy_billion_gltf = await modelLoader('/70_00B.glb');
+
+  seventy_billion = seventy_billion_gltf.scene;
+
+  seventy_billion.position.x = 500;
+  seventy_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(seventy_billion);
+
+  objects.push({
+    "title": "Vladimir Putin Net Worth",
+    "description": "$70,000,000,000",
+    "camera_position": {
+      "x": seventy_billion.position.x,
+      "y": 0,
+      "z": 400
+    },
+    "object": seventy_billion
+  });
+
+
+  var ninety_five_billion_gltf = await modelLoader('/95_00B.glb');
+
+  ninety_five_billion = ninety_five_billion_gltf.scene;
+
+  ninety_five_billion.position.x = 800;
+  ninety_five_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(ninety_five_billion);
+
+  objects.push({
+    "title": "Cost of Climate Related Disasters 2020 in USA",
+    "description": "$95,000,000,000",
+    "camera_position": {
+      "x": ninety_five_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": ninety_five_billion
+  });
+
+  var one_thirty_four_billion_gltf = await modelLoader('/134_00B.glb');
+
+  one_thirty_four_billion = one_thirty_four_billion_gltf.scene;
+
+  one_thirty_four_billion.position.x = 1150;
+  one_thirty_four_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_thirty_four_billion);
+
+  objects.push({
+    "title": "Bill Gates Net Worth",
+    "description": "$134,000,000,000",
+    "camera_position": {
+      "x": one_thirty_four_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": one_thirty_four_billion
+  });
+
+
+  var one_ninety_billion_gltf = await modelLoader('/190_00B.glb');
+
+  one_ninety_billion = one_ninety_billion_gltf.scene;
+
+  one_ninety_billion.position.x = 1600;
+  one_ninety_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_ninety_billion);
+
+  objects.push({
+    "title": "Elon Musk Net Worth",
+    "description": "$190,000,000,000",
+    "camera_position": {
+      "x": one_ninety_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": one_ninety_billion
+  });
+
+
+  var two_hundred_one_billion_gltf = await modelLoader('/201_00B.glb');
+
+  two_hundred_one_billion = two_hundred_one_billion_gltf.scene;
+
+  two_hundred_one_billion.position.x = 2050;
+  two_hundred_one_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(two_hundred_one_billion);
+
+  objects.push({
+    "title": "Jeff Bezos Net Worth",
+    "description": "$201,000,000,000",
+    "camera_position": {
+      "x": two_hundred_one_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": two_hundred_one_billion
+  });
+
+
+  var two_hundred_nine_billion_gltf = await modelLoader('/209_16B.glb');
+
+  two_hundred_nine_billion = two_hundred_nine_billion_gltf.scene;
+
+  two_hundred_nine_billion.position.x = 2450;
+  two_hundred_nine_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(two_hundred_nine_billion);
+
+  objects.push({
+    "title": "China Defense Budget 2021",
+    "description": "$209,160,000,000",
+    "camera_position": {
+      "x": two_hundred_nine_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": two_hundred_nine_billion
+  });
+
+
+  var two_hundred_seventy_three_billion_gltf = await modelLoader('/273_65B.glb');
+
+  two_hundred_seventy_three_billion = two_hundred_seventy_three_billion_gltf.scene;
+
+  two_hundred_seventy_three_billion.position.x = 2900;
+  two_hundred_seventy_three_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(two_hundred_seventy_three_billion);
+
+  objects.push({
+    "title": "Value of All Gold Bars in Fort Knox",
+    "description": "$273,650,000,000",
+    "camera_position": {
+      "x": two_hundred_seventy_three_billion.position.x,
+      "y": 0,
+      "z": 550
+    },
+    "object": two_hundred_seventy_three_billion
+  });
+
+
+  var seven_hundred_five_billion_gltf = await modelLoader('/705_00B.glb');
+
+  seven_hundred_five_billion = seven_hundred_five_billion_gltf.scene;
+
+  seven_hundred_five_billion.position.x = 3500;
+  seven_hundred_five_billion.rotation.x = -Math.PI / 2;
+
+  scene.add(seven_hundred_five_billion);
+
+  objects.push({
+    "title": "US Defense Budget 2021",
+    "description": "$705,000,000,000",
+    "camera_position": {
+      "x": seven_hundred_five_billion.position.x,
+      "y": 0,
+      "z": 750
+    },
+    "object": seven_hundred_five_billion
+  });
+
+
+  var one_p_three_trillion_gltf = await modelLoader('/1_30T.glb');
+
+  one_p_three_trillion = one_p_three_trillion_gltf.scene;
+
+  one_p_three_trillion.position.x = 4200;
+  one_p_three_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_p_three_trillion);
+
+  objects.push({
+    "title": "Cost to End Homelessness in US",
+    "description": "$1,300,000,000,000",
+    "camera_position": {
+      "x": one_p_three_trillion.position.x,
+      "y": 0,
+      "z": 900
+    },
+    "object": one_p_three_trillion
+  });
+
+
+  var one_p_seven_five_trillion_gltf = await modelLoader('/1_74T.glb');
+
+  one_p_seven_five_trillion = one_p_seven_five_trillion_gltf.scene;
+
+  one_p_seven_five_trillion.position.x = 5000;
+  one_p_seven_five_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_p_seven_five_trillion);
+
+  objects.push({
+    "title": "Value of All Land on Manhattan 2014",
+    "description": "$1,740,000,000,000",
+    "camera_position": {
+      "x": one_p_seven_five_trillion.position.x,
+      "y": 0,
+      "z": 1050
+    },
+    "object": one_p_seven_five_trillion
+  });
+
+
+  var two_p_one_trillion_gltf = await modelLoader('/2_10T.glb');
+
+  two_p_one_trillion = two_p_one_trillion_gltf.scene;
+
+  two_p_one_trillion.position.x = 5900;
+  two_p_one_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(two_p_one_trillion);
+
+  objects.push({
+    "title": "Net Worth of Bottom 50% of Americans",
+    "description": "$2,100,000,000,000",
+    "camera_position": {
+      "x": two_p_one_trillion.position.x,
+      "y": 0,
+      "z": 1100
+    },
+    "object": two_p_one_trillion
+  });
+
+
+  var three_p_four_trillion_gltf = await modelLoader('/3_40T.glb');
+
+  three_p_four_trillion = three_p_four_trillion_gltf.scene;
+
+  three_p_four_trillion.position.x = 6900;
+  three_p_four_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(three_p_four_trillion);
+
+  objects.push({
+    "title": "Cost of US Covid Relief Bills",
+    "description": "$3,400,000,000,000",
+    "camera_position": {
+      "x": three_p_four_trillion.position.x,
+      "y": 0,
+      "z": 1300
+    },
+    "object": three_p_four_trillion
+  });
+
+
+  var four_p_five_trillion_gltf = await modelLoader('/4_50T.glb');
+
+  four_p_five_trillion = four_p_five_trillion_gltf.scene;
+
+  four_p_five_trillion.position.x = 8000;
+  four_p_five_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(four_p_five_trillion);
+
+  objects.push({
+    "title": "Net Worth of 400 Wealthiest Americans",
+    "description": "$4,500,000,000,000",
+    "camera_position": {
+      "x": four_p_five_trillion.position.x,
+      "y": 0,
+      "z": 1400
+    },
+    "object": four_p_five_trillion
+  });
+
+
+  var twenty_one_p_eigthy_five_trillion_gltf = await modelLoader('/21_85T.glb');
+
+  twenty_one_p_eigthy_five_trillion = twenty_one_p_eigthy_five_trillion_gltf.scene;
+
+  twenty_one_p_eigthy_five_trillion.position.x = 9500;
+  twenty_one_p_eigthy_five_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(twenty_one_p_eigthy_five_trillion);
+
+  objects.push({
+    "title": "US GDP 2021",
+    "description": "$21,850,000,000,000",
+    "camera_position": {
+      "x": twenty_one_p_eigthy_five_trillion.position.x,
+      "y": 0,
+      "z": 2500
+    },
+    "object": twenty_one_p_eigthy_five_trillion
+  });
+
+
+  var twenty_eight_p_fifty_trillion_gltf = await modelLoader('/28_50T.glb');
+
+  twenty_eight_p_fifty_trillion = twenty_eight_p_fifty_trillion_gltf.scene;
+
+  twenty_eight_p_fifty_trillion.position.x = 11500;
+  twenty_eight_p_fifty_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(twenty_eight_p_fifty_trillion);
+
+  objects.push({
+    "title": "US Debt 2021",
+    "description": "$28,500,000,000,000",
+    "camera_position": {
+      "x": twenty_eight_p_fifty_trillion.position.x,
+      "y": 0,
+      "z": 2700
+    },
+    "object": twenty_eight_p_fifty_trillion
+  });
+
+  var thirty_three_trillion_gltf = await modelLoader('/33_00T.glb');
+
+  thirty_three_trillion = thirty_three_trillion_gltf.scene;
+
+  thirty_three_trillion.position.x = 13500;
+  thirty_three_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(thirty_three_trillion);
+
+  objects.push({
+    "title": "Net Worth of 50th to 90th Percentile of Americans",
+    "description": "$33,000,000,000,000",
+    "camera_position": {
+      "x": thirty_three_trillion.position.x,
+      "y": 0,
+      "z": 2800
+    },
+    "object": thirty_three_trillion
+  });
+
+  var thirty_four_trillion_gltf = await modelLoader('/34_00T.glb');
+
+  thirty_four_trillion = thirty_four_trillion_gltf.scene;
+
+  thirty_four_trillion.position.x = 16000;
+  thirty_four_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(thirty_four_trillion);
+
+  objects.push({
+    "title": "Net worth of Top 1 Percent of Americans",
+    "description": "$34,000,000,000,000",
+    "camera_position": {
+      "x": thirty_four_trillion.position.x,
+      "y": 0,
+      "z": 3000
+    },
+    "object": thirty_four_trillion
+  });
+
+  var forty_three_trillion_gltf = await modelLoader('/43_00T.glb');
+
+  forty_three_trillion = forty_three_trillion_gltf.scene;
+
+  forty_three_trillion.position.x = 18500;
+  forty_three_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(forty_three_trillion);
+
+  objects.push({
+    "title": "Net Worth of 90th to 99th Percentile of Americans",
+    "description": "$43,000,000,000,000",
+    "camera_position": {
+      "x": forty_three_trillion.position.x,
+      "y": 0,
+      "z": 3200
+    },
+    "object": forty_three_trillion
+  });
+
+
+
+  var forty_eight_trillion_gltf = await modelLoader('/48_00T.glb');
+
+  forty_eight_trillion = forty_eight_trillion_gltf.scene;
+
+  forty_eight_trillion.position.x = 21000;
+  forty_eight_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(forty_eight_trillion);
+
+  objects.push({
+    "title": "Cost of Limiting Global Warming to 1.5°C",
+    "description": "$48,000,000,000,000",
+    "camera_position": {
+      "x": forty_eight_trillion.position.x,
+      "y": 0,
+      "z": 3300
+    },
+    "object": forty_eight_trillion
+  });
+
+
+  var three_hundred_sixty_trillion_gltf = await modelLoader('/360_60T.glb');
+
+  three_hundred_sixty_trillion = three_hundred_sixty_trillion_gltf.scene;
+
+  three_hundred_sixty_trillion.position.x = 24500;
+  three_hundred_sixty_trillion.rotation.x = -Math.PI / 2;
+
+  scene.add(three_hundred_sixty_trillion);
+
+  objects.push({
+    "title": "Wealth of All of Humanity",
+    "description": "$360,600,000,000,000",
+    "camera_position": {
+      "x": three_hundred_sixty_trillion.position.x,
+      "y": 0,
+      "z": 6500
+    },
+    "object": three_hundred_sixty_trillion
+  });
+
+
+  var one_quadrillion_gltf = await modelLoader('/1_02Q.glb');
+
+  one_quadrillion = one_quadrillion_gltf.scene;
+
+  one_quadrillion.position.x = 30500;
+  one_quadrillion.rotation.x = -Math.PI / 2;
+
+  scene.add(one_quadrillion);
+
+  objects.push({
+    "title": "Low End Cost of Climate Change 2020-2100",
+    "description": "$1,028,600,000,000,000",
+    "camera_position": {
+      "x": one_quadrillion.position.x,
+      "y": 0,
+      "z": 9000
+    },
+    "object": one_quadrillion
+  });
+
+
+  var eleven_quadrillion_gltf = await modelLoader('/11_87Q.glb');
+
+  eleven_quadrillion = eleven_quadrillion_gltf.scene;
+
+  eleven_quadrillion.position.x = 42500;
+  eleven_quadrillion.rotation.x = -Math.PI / 2;
+
+  scene.add(eleven_quadrillion);
+
+  objects.push({
+    "title": "High End Cost of Climate Change 2020-2100",
+    "description": "$11,870,000,000,000,000",
+    "camera_position": {
+      "x": eleven_quadrillion.position.x,
+      "y": 0,
+      "z": 20000
+    },
+    "object": eleven_quadrillion
+  });
+
+
 
 
   // set initial camera position and rotation
@@ -767,18 +941,122 @@ const animate = () => {
     sixty_five_thousand.rotation.z += 0.02;
   }
 
-  if (seventy_five_thousand) {
-    seventy_five_thousand.rotation.z += 0.02;
-  }
-
-  if (one_hundred_thousand) {
-    one_hundred_thousand.rotation.z += 0.01;
-  }
-
   if (three_hundred_fifty_thousand) {
-    three_hundred_fifty_thousand.rotation.y += 0.01;
+    three_hundred_fifty_thousand.rotation.z += 0.01;
   }
 
+  if (one_million) {
+    one_million.rotation.z += 0.01;
+  }
+
+  if (three_million_five_hundred_thousand) {
+    three_million_five_hundred_thousand.rotation.z += 0.01;
+  }
+  if (six_million) {
+    six_million.rotation.z += 0.01;
+  }
+
+  if (eighty_million) {
+    eighty_million.rotation.z += 0.005;
+  }
+
+  if (human_1) {
+    human_1.rotation.z += 0.01;
+  }
+  if (four_forty_million) {
+    four_forty_million.rotation.z += 0.005;
+  }
+  if (one_p_four_billion) {
+    one_p_four_billion.rotation.z += 0.005;
+  }
+  if (one_p_eight_billion) {
+    one_p_eight_billion.rotation.z += 0.005;
+  }
+  if (seventy_billion) {
+    seventy_billion.rotation.z += 0.005;
+  }
+  if (ninety_five_billion) {
+    ninety_five_billion.rotation.z += 0.005;
+  }
+  if (one_thirty_four_billion) {
+    one_thirty_four_billion.rotation.z += 0.005;
+  }
+
+  if (one_ninety_billion) {
+    one_ninety_billion.rotation.z += 0.005;
+  }
+
+  if (two_hundred_one_billion) {
+    two_hundred_one_billion.rotation.z += 0.005;
+  }
+
+  if (two_hundred_nine_billion) {
+    two_hundred_nine_billion.rotation.z += 0.005;
+  }
+
+  if (two_hundred_seventy_three_billion) {
+    two_hundred_seventy_three_billion.rotation.z += 0.005;
+  }
+
+  if (seven_hundred_five_billion) {
+    seven_hundred_five_billion.rotation.z += 0.005;
+  }
+
+  if (one_p_three_trillion) {
+    one_p_three_trillion.rotation.z += 0.005;
+  }
+
+  if (one_p_seven_five_trillion) {
+    one_p_seven_five_trillion.rotation.z += 0.005;
+  }
+
+  if (two_p_one_trillion) {
+    two_p_one_trillion.rotation.z += 0.005;
+  }
+
+  if (three_p_four_trillion) {
+    three_p_four_trillion.rotation.z += 0.005;
+  }
+
+  if (four_p_five_trillion) {
+    four_p_five_trillion.rotation.z += 0.005;
+  }
+
+  if (twenty_one_p_eigthy_five_trillion) {
+    twenty_one_p_eigthy_five_trillion.rotation.z += 0.005;
+  }
+
+  if (twenty_eight_p_fifty_trillion) {
+    twenty_eight_p_fifty_trillion.rotation.z += 0.005;
+  }
+
+  if (thirty_three_trillion) {
+    thirty_three_trillion.rotation.z += 0.005;
+  }
+
+  if (thirty_four_trillion) {
+    thirty_four_trillion.rotation.z += 0.005;
+  }
+
+  if (forty_three_trillion) {
+    forty_three_trillion.rotation.z += 0.005;
+  }
+
+  if (forty_eight_trillion) {
+    forty_eight_trillion.rotation.z += 0.005;
+  }
+
+  if (three_hundred_sixty_trillion) {
+    three_hundred_sixty_trillion.rotation.z += 0.005;
+  }
+
+  if (one_quadrillion) {
+    one_quadrillion.rotation.z += 0.005;
+  }
+
+  if (eleven_quadrillion) {
+    eleven_quadrillion.rotation.z += 0.005;
+  }
 
 };
 
@@ -843,10 +1121,10 @@ function canvasAnimate() {
   }
 }
 
-$('.go-right').on('click', () => {
-  index = 1;
-  canvasAnimate();
-});
+// $('.go-right').on('click', () => {
+//   index = 1;
+//   canvasAnimate();
+// });
 
 let app_container = $('#app-container');
 let canvas = $('canvas');
@@ -902,11 +1180,11 @@ function touchMove(event) {
 
 function touchEnd(event) {
 
-  if (currentTranslate < -100 && index < objects.length - 1) {
+  if (currentTranslate < -50 && index < objects.length - 1) {
     index += 1;
   }
 
-  if (currentTranslate > 100 && index > 0) {
+  if (currentTranslate > 50 && index > 0) {
     index -= 1;
   }
 
@@ -921,3 +1199,20 @@ function getPositionX(event) {
   return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
 }
 
+(function () {
+  const classes = document.body.classList;
+  let timer = 0;
+  window.addEventListener('resize', function () {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    else
+      classes.add('stop-transitions');
+
+    timer = setTimeout(() => {
+      classes.remove('stop-transitions');
+      timer = null;
+    }, 100);
+  });
+})();

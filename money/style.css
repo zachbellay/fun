@@ -34,7 +34,7 @@ canvas{
 
 @media screen and (min-width: 1090px) {
   .item-title{
-    font-size: 5em;
+    font-size: 4em;
   }
 
   .item-description{
@@ -123,7 +123,7 @@ canvas{
   opacity: 1;
   animation: fade 2s infinite;
   animation-timing-function: quadratic;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 
@@ -239,4 +239,8 @@ video {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+body.stop-transitions * {
+  transition: none !important;
 }
