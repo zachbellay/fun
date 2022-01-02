@@ -3,34 +3,23 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap } from "gsap";
 import $ from "jquery";
-// import Stats from 'three/examples/jsm/libs/stats.module'
-// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
-console.log(import.meta.env.BASE_URL);
-
-// if (import.meta.env.BASE_URL == "/") {
-//   import.meta.env.BASE_URL = "";
-// }
+import { Uint8ClampedBufferAttribute } from 'three';
 
 var BASE = import.meta.env.BASE_URL;
 if (BASE == "/") {
   BASE = "";
 }
-console.log('base' + BASE);
 
-// const stats = Stats();
-// document.body.appendChild(stats.dom)
 
 var screen_width = $(window).width();
-
 
 THREE.Cache.enabled = true;
 
 let font, scene, camera, renderer, controls, window_width, window_height;
 var objects = [''];
 
-let one_thousand,
+let liberty,
+  one_thousand,
   two_thousand,
   five_thousand,
   ten_thousand,
@@ -56,7 +45,7 @@ let one_thousand,
   two_hundred_seventy_three_billion,
   seven_hundred_five_billion,
   one_p_three_trillion,
-  one_p_seven_five_trillion,
+  one_p_seven_four_trillion,
   two_p_one_trillion,
   three_p_four_trillion,
   four_p_five_trillion,
@@ -79,7 +68,7 @@ let index = 0;
 let prev_index = -1;
 
 function modelLoader(url) {
-  
+
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
     loader.load(BASE + url, data => resolve(data), null, reject);
@@ -115,6 +104,86 @@ async function init() {
   scene.add(ambientLight);
 
   // OBJECTS  
+
+  const loader = new THREE.TextureLoader();
+
+  function human_format_filename_to_number(filename) {
+    let lut = {
+      "K": 1000,
+      "M": 1000000,
+      "B": 1000000000,
+      "T": 1000000000000,
+      "Q": 1000000000000000,
+    }
+
+    let [number, ext] = filename.split(".");
+    let magnitude = number[number.length - 1];
+    let number_without_magnitude = number.slice(0, number.length - 1);
+    let [big, small] = number_without_magnitude.split("_");
+    let value = (Number(big) + (Number(small) / 10)) * lut[magnitude];
+    return value;
+  }
+
+  function number_to_human_format(number) {
+    var magnitude = 0;
+    while (Math.abs(number) >= 1000) {
+      magnitude += 1;
+      number /= 1000;
+    }
+    var output = String(number.toFixed(2)) + ["", "K", "M", "B", "T", "Q"][magnitude];
+    output = output.replace(".", "_");
+    return output;
+  }
+
+  function value_to_dimensions(value) {
+    const scaling_d = 0.25;
+    const scaling_l = 2.63;
+    const scaling_h = 1.13;
+
+    var bundles = value / 10000;
+
+    const length = 156;
+    const height = 66;
+    const depth = 10;
+
+    var alpha = Math.cbrt(bundles * length * height * depth);
+
+    var l = Math.round(alpha / length) * scaling_l;
+    var h = Math.round(alpha / height) * scaling_h;
+    var d = Math.round(alpha / depth) * scaling_d;
+    
+    return [l, h, d];
+  }
+
+  function value_to_cube(value) {
+    var filename;
+
+    // this nasty hack is because above this value the texture is the same
+    // so we should just use the same texture to reduce the number of assets
+    // that need to be loaded by the browser
+    if (value > 21850000000000) {
+      filename = "21_85T";
+    } else {
+      filename = number_to_human_format(value);
+    }
+
+    const materials = [
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_side.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_side.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_side.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_side.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_front.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(BASE + '/' + filename + '_back.jpg') }),
+    ];
+    let [boxWidth, boxHeight, boxDepth] = value_to_dimensions(value);
+    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+    
+    const cube = new THREE.Mesh(geometry, materials);
+    cube.position.y = (boxHeight / 2) - 9; // the human is adjust 9 units, so this is applied to all the rest so the "floor" is the same
+    return cube;
+  }
+
+
 
   // COFFEE -- $1
 
@@ -165,7 +234,7 @@ async function init() {
 
   scene.add(one_hundred_dollar);
   objects.push({
-    "title": "Pair of Allbirds",
+    "title": "Pair of Allbirds Sneakers",
     "description": "$100",
     "camera_position": {
       "x": 10,
@@ -179,7 +248,7 @@ async function init() {
 
   // Macbook Air -- $1000
 
-  var one_thousand_gltf = await modelLoader('/1k.glb');
+  var one_thousand_gltf = await modelLoader('1k.glb');
   one_thousand = one_thousand_gltf.scene;
 
   one_thousand.position.x = 9;
@@ -199,7 +268,7 @@ async function init() {
 
   // $10k Plane Ticket lmao -- $10K
 
-  var ten_thousand_gltf = await modelLoader('/10k.glb');
+  var ten_thousand_gltf = await modelLoader('10k.glb');
   ten_thousand = ten_thousand_gltf.scene;
 
   ten_thousand.position.x = 12;
@@ -220,7 +289,7 @@ async function init() {
 
 
   // Median US Household Income -- $65k
-  var sixty_five_thousand_gltf = await modelLoader('/65k_cube.glb');
+  var sixty_five_thousand_gltf = await modelLoader('65k_cube.glb');
 
   sixty_five_thousand = sixty_five_thousand_gltf.scene;
 
@@ -242,7 +311,7 @@ async function init() {
 
   // House -- $350K
 
-  var three_hundred_fifty_gltf = await modelLoader('/350k_cube.glb');
+  var three_hundred_fifty_gltf = await modelLoader('350k_cube.glb');
 
   three_hundred_fifty_thousand = three_hundred_fifty_gltf.scene;
 
@@ -264,7 +333,7 @@ async function init() {
 
   // Janitor Lifetime Earnings -- $1M
 
-  var one_million_gltf = await modelLoader('/1M_cube.glb');
+  var one_million_gltf = await modelLoader('1M_cube.glb');
 
   one_million = one_million_gltf.scene;
 
@@ -284,7 +353,7 @@ async function init() {
     "object": one_million
   });
 
-  var three_million_five_hundred_thousand_gltf = await modelLoader('/3p5M_cube.glb');
+  var three_million_five_hundred_thousand_gltf = await modelLoader('3p5M_cube.glb');
 
   three_million_five_hundred_thousand = three_million_five_hundred_thousand_gltf.scene;
 
@@ -299,12 +368,12 @@ async function init() {
     "camera_position": {
       "x": three_million_five_hundred_thousand.position.x,
       "y": 0,
-      "z": 16
+      "z": 17
     },
     "object": three_million_five_hundred_thousand
   });
 
-  var six_million_gltf = await modelLoader('/6M_cube.glb');
+  var six_million_gltf = await modelLoader('6M_cube.glb');
 
   six_million = six_million_gltf.scene;
 
@@ -319,19 +388,14 @@ async function init() {
     "camera_position": {
       "x": six_million.position.x,
       "y": 0,
-      "z": 17
+      "z": 20
     },
     "object": six_million
   });
 
 
-  var eighty_million_gltf = await modelLoader('/80M_cube.glb');
-
-  eighty_million = eighty_million_gltf.scene;
-
+  eighty_million = value_to_cube(80000000);
   eighty_million.position.x = 80;
-  eighty_million.rotation.x = -Math.PI / 2;
-
   scene.add(eighty_million);
 
   objects.push({
@@ -345,7 +409,7 @@ async function init() {
     "object": eighty_million
   });
 
-  var human_1_gltf = await modelLoader('/human.glb');
+  var human_1_gltf = await modelLoader('human.glb');
 
   human_1 = human_1_gltf.scene;
 
@@ -367,14 +431,9 @@ async function init() {
     "object": human_1
   });
 
-  var four_forty_million_gltf = await modelLoader('/440M_cube.glb');
 
-  four_forty_million = four_forty_million_gltf.scene;
-
+  four_forty_million = value_to_cube(440000000)
   four_forty_million.position.x = 160;
-  // four_forty_million.position.y = 4;
-  four_forty_million.rotation.x = -Math.PI / 2;
-
   scene.add(four_forty_million);
 
   objects.push({
@@ -388,13 +447,8 @@ async function init() {
     "object": four_forty_million
   });
 
-  var one_p_four_billion_gltf = await modelLoader('/1_40B.glb');
-
-  one_p_four_billion = one_p_four_billion_gltf.scene;
-
+  one_p_four_billion = value_to_cube(1400000000);
   one_p_four_billion.position.x = 230;
-  one_p_four_billion.rotation.x = -Math.PI / 2;
-
   scene.add(one_p_four_billion);
 
   objects.push({
@@ -408,13 +462,8 @@ async function init() {
     "object": one_p_four_billion
   });
 
-  var one_p_eight_billion_gltf = await modelLoader('/1_80B.glb');
-
-  one_p_eight_billion = one_p_eight_billion_gltf.scene;
-
+  one_p_eight_billion = value_to_cube(1800000000);
   one_p_eight_billion.position.x = 320;
-  one_p_eight_billion.rotation.x = -Math.PI / 2;
-
   scene.add(one_p_eight_billion);
 
   objects.push({
@@ -428,13 +477,10 @@ async function init() {
     "object": one_p_eight_billion
   });
 
-  var seventy_billion_gltf = await modelLoader('/70_00B.glb');
 
-  seventy_billion = seventy_billion_gltf.scene;
 
+  seventy_billion = value_to_cube(70000000000);
   seventy_billion.position.x = 500;
-  seventy_billion.rotation.x = -Math.PI / 2;
-
   scene.add(seventy_billion);
 
   objects.push({
@@ -449,13 +495,9 @@ async function init() {
   });
 
 
-  var ninety_five_billion_gltf = await modelLoader('/95_00B.glb');
 
-  ninety_five_billion = ninety_five_billion_gltf.scene;
-
+  ninety_five_billion = value_to_cube(95000000000);
   ninety_five_billion.position.x = 800;
-  ninety_five_billion.rotation.x = -Math.PI / 2;
-
   scene.add(ninety_five_billion);
 
   objects.push({
@@ -469,13 +511,8 @@ async function init() {
     "object": ninety_five_billion
   });
 
-  var one_thirty_four_billion_gltf = await modelLoader('/134_00B.glb');
-
-  one_thirty_four_billion = one_thirty_four_billion_gltf.scene;
-
+  one_thirty_four_billion = value_to_cube(134000000000);
   one_thirty_four_billion.position.x = 1150;
-  one_thirty_four_billion.rotation.x = -Math.PI / 2;
-
   scene.add(one_thirty_four_billion);
 
   objects.push({
@@ -490,13 +527,8 @@ async function init() {
   });
 
 
-  var one_ninety_billion_gltf = await modelLoader('/190_00B.glb');
-
-  one_ninety_billion = one_ninety_billion_gltf.scene;
-
+  one_ninety_billion = value_to_cube(190000000000);
   one_ninety_billion.position.x = 1600;
-  one_ninety_billion.rotation.x = -Math.PI / 2;
-
   scene.add(one_ninety_billion);
 
   objects.push({
@@ -510,14 +542,8 @@ async function init() {
     "object": one_ninety_billion
   });
 
-
-  var two_hundred_one_billion_gltf = await modelLoader('/201_00B.glb');
-
-  two_hundred_one_billion = two_hundred_one_billion_gltf.scene;
-
+  two_hundred_one_billion = value_to_cube(201000000000);
   two_hundred_one_billion.position.x = 2050;
-  two_hundred_one_billion.rotation.x = -Math.PI / 2;
-
   scene.add(two_hundred_one_billion);
 
   objects.push({
@@ -531,14 +557,8 @@ async function init() {
     "object": two_hundred_one_billion
   });
 
-
-  var two_hundred_nine_billion_gltf = await modelLoader('/209_16B.glb');
-
-  two_hundred_nine_billion = two_hundred_nine_billion_gltf.scene;
-
+  two_hundred_nine_billion = value_to_cube(209160000000);
   two_hundred_nine_billion.position.x = 2450;
-  two_hundred_nine_billion.rotation.x = -Math.PI / 2;
-
   scene.add(two_hundred_nine_billion);
 
   objects.push({
@@ -553,13 +573,8 @@ async function init() {
   });
 
 
-  var two_hundred_seventy_three_billion_gltf = await modelLoader('/273_65B.glb');
-
-  two_hundred_seventy_three_billion = two_hundred_seventy_three_billion_gltf.scene;
-
+  two_hundred_seventy_three_billion = value_to_cube(273650000000);
   two_hundred_seventy_three_billion.position.x = 2900;
-  two_hundred_seventy_three_billion.rotation.x = -Math.PI / 2;
-
   scene.add(two_hundred_seventy_three_billion);
 
   objects.push({
@@ -573,14 +588,8 @@ async function init() {
     "object": two_hundred_seventy_three_billion
   });
 
-
-  var seven_hundred_five_billion_gltf = await modelLoader('/705_00B.glb');
-
-  seven_hundred_five_billion = seven_hundred_five_billion_gltf.scene;
-
+  seven_hundred_five_billion = value_to_cube(705000000000);
   seven_hundred_five_billion.position.x = 3500;
-  seven_hundred_five_billion.rotation.x = -Math.PI / 2;
-
   scene.add(seven_hundred_five_billion);
 
   objects.push({
@@ -595,13 +604,8 @@ async function init() {
   });
 
 
-  var one_p_three_trillion_gltf = await modelLoader('/1_30T.glb');
-
-  one_p_three_trillion = one_p_three_trillion_gltf.scene;
-
+  one_p_three_trillion = value_to_cube(1300000000000);
   one_p_three_trillion.position.x = 4200;
-  one_p_three_trillion.rotation.x = -Math.PI / 2;
-
   scene.add(one_p_three_trillion);
 
   objects.push({
@@ -616,34 +620,24 @@ async function init() {
   });
 
 
-  var one_p_seven_five_trillion_gltf = await modelLoader('/1_74T.glb');
-
-  one_p_seven_five_trillion = one_p_seven_five_trillion_gltf.scene;
-
-  one_p_seven_five_trillion.position.x = 5000;
-  one_p_seven_five_trillion.rotation.x = -Math.PI / 2;
-
-  scene.add(one_p_seven_five_trillion);
+  one_p_seven_four_trillion = value_to_cube(1740000000000);
+  one_p_seven_four_trillion.position.x = 5000;
+  scene.add(one_p_seven_four_trillion);
 
   objects.push({
     "title": "Value of All Land on Manhattan 2014",
     "description": "$1,740,000,000,000",
     "camera_position": {
-      "x": one_p_seven_five_trillion.position.x,
+      "x": one_p_seven_four_trillion.position.x,
       "y": 0,
       "z": 1050
     },
-    "object": one_p_seven_five_trillion
+    "object": one_p_seven_four_trillion
   });
 
 
-  var two_p_one_trillion_gltf = await modelLoader('/2_10T.glb');
-
-  two_p_one_trillion = two_p_one_trillion_gltf.scene;
-
+  two_p_one_trillion = value_to_cube(2100000000000);
   two_p_one_trillion.position.x = 5900;
-  two_p_one_trillion.rotation.x = -Math.PI / 2;
-
   scene.add(two_p_one_trillion);
 
   objects.push({
@@ -657,14 +651,8 @@ async function init() {
     "object": two_p_one_trillion
   });
 
-
-  var three_p_four_trillion_gltf = await modelLoader('/3_40T.glb');
-
-  three_p_four_trillion = three_p_four_trillion_gltf.scene;
-
+  three_p_four_trillion = value_to_cube(3400000000000);
   three_p_four_trillion.position.x = 6900;
-  three_p_four_trillion.rotation.x = -Math.PI / 2;
-
   scene.add(three_p_four_trillion);
 
   objects.push({
@@ -679,13 +667,8 @@ async function init() {
   });
 
 
-  var four_p_five_trillion_gltf = await modelLoader('/4_50T.glb');
-
-  four_p_five_trillion = four_p_five_trillion_gltf.scene;
-
+  four_p_five_trillion = value_to_cube(4500000000000);
   four_p_five_trillion.position.x = 8000;
-  four_p_five_trillion.rotation.x = -Math.PI / 2;
-
   scene.add(four_p_five_trillion);
 
   objects.push({
@@ -698,15 +681,25 @@ async function init() {
     },
     "object": four_p_five_trillion
   });
+  var liberty_gltf = await modelLoader('liberty.glb');
+  liberty = liberty_gltf.scene;
+  liberty.position.x = 9000;
+  scene.add(liberty);
 
+  objects.push({
+    "title": "Statue of Liberty",
+    "description": "151 ft. tall",
+    "camera_position": {
+      "x": liberty.position.x,
+      "y": four_p_five_trillion.position.y,
+      "z": 1450
+    },
+    "object": liberty
+  });
 
-  var twenty_one_p_eigthy_five_trillion_gltf = await modelLoader('/21_85T.glb');
-
-  twenty_one_p_eigthy_five_trillion = twenty_one_p_eigthy_five_trillion_gltf.scene;
-
-  twenty_one_p_eigthy_five_trillion.position.x = 9500;
-  twenty_one_p_eigthy_five_trillion.rotation.x = -Math.PI / 2;
-
+  // this same texture from here on out will be used for all cubes
+  twenty_one_p_eigthy_five_trillion = value_to_cube(21850000000000);
+  twenty_one_p_eigthy_five_trillion.position.x = 10500;
   scene.add(twenty_one_p_eigthy_five_trillion);
 
   objects.push({
@@ -720,14 +713,8 @@ async function init() {
     "object": twenty_one_p_eigthy_five_trillion
   });
 
-
-  var twenty_eight_p_fifty_trillion_gltf = await modelLoader('/28_50T.glb');
-
-  twenty_eight_p_fifty_trillion = twenty_eight_p_fifty_trillion_gltf.scene;
-
-  twenty_eight_p_fifty_trillion.position.x = 11500;
-  twenty_eight_p_fifty_trillion.rotation.x = -Math.PI / 2;
-
+  twenty_eight_p_fifty_trillion = value_to_cube(28500000000000);
+  twenty_eight_p_fifty_trillion.position.x = 12500;
   scene.add(twenty_eight_p_fifty_trillion);
 
   objects.push({
@@ -741,13 +728,8 @@ async function init() {
     "object": twenty_eight_p_fifty_trillion
   });
 
-  var thirty_three_trillion_gltf = await modelLoader('/33_00T.glb');
-
-  thirty_three_trillion = thirty_three_trillion_gltf.scene;
-
-  thirty_three_trillion.position.x = 13500;
-  thirty_three_trillion.rotation.x = -Math.PI / 2;
-
+  thirty_three_trillion = value_to_cube(33000000000000);
+  thirty_three_trillion.position.x = 14500;
   scene.add(thirty_three_trillion);
 
   objects.push({
@@ -761,13 +743,8 @@ async function init() {
     "object": thirty_three_trillion
   });
 
-  var thirty_four_trillion_gltf = await modelLoader('/34_00T.glb');
-
-  thirty_four_trillion = thirty_four_trillion_gltf.scene;
-
-  thirty_four_trillion.position.x = 16000;
-  thirty_four_trillion.rotation.x = -Math.PI / 2;
-
+  thirty_four_trillion = value_to_cube(34000000000000);
+  thirty_four_trillion.position.x = 17000;
   scene.add(thirty_four_trillion);
 
   objects.push({
@@ -781,13 +758,8 @@ async function init() {
     "object": thirty_four_trillion
   });
 
-  var forty_three_trillion_gltf = await modelLoader('/43_00T.glb');
-
-  forty_three_trillion = forty_three_trillion_gltf.scene;
-
-  forty_three_trillion.position.x = 18500;
-  forty_three_trillion.rotation.x = -Math.PI / 2;
-
+  forty_three_trillion = value_to_cube(43000000000000);
+  forty_three_trillion.position.x = 19500;
   scene.add(forty_three_trillion);
 
   objects.push({
@@ -802,14 +774,8 @@ async function init() {
   });
 
 
-
-  var forty_eight_trillion_gltf = await modelLoader('/48_00T.glb');
-
-  forty_eight_trillion = forty_eight_trillion_gltf.scene;
-
-  forty_eight_trillion.position.x = 21000;
-  forty_eight_trillion.rotation.x = -Math.PI / 2;
-
+  forty_eight_trillion = value_to_cube(48000000000000);
+  forty_eight_trillion.position.x = 22000;
   scene.add(forty_eight_trillion);
 
   objects.push({
@@ -824,13 +790,8 @@ async function init() {
   });
 
 
-  var three_hundred_sixty_trillion_gltf = await modelLoader('/360_60T.glb');
-
-  three_hundred_sixty_trillion = three_hundred_sixty_trillion_gltf.scene;
-
-  three_hundred_sixty_trillion.position.x = 24500;
-  three_hundred_sixty_trillion.rotation.x = -Math.PI / 2;
-
+  three_hundred_sixty_trillion = value_to_cube(360600000000000);
+  three_hundred_sixty_trillion.position.x = 25500;
   scene.add(three_hundred_sixty_trillion);
 
   objects.push({
@@ -845,13 +806,8 @@ async function init() {
   });
 
 
-  var one_quadrillion_gltf = await modelLoader('/1_02Q.glb');
-
-  one_quadrillion = one_quadrillion_gltf.scene;
-
-  one_quadrillion.position.x = 30500;
-  one_quadrillion.rotation.x = -Math.PI / 2;
-
+  one_quadrillion = value_to_cube(1000000000000000);
+  one_quadrillion.position.x = 31500;
   scene.add(one_quadrillion);
 
   objects.push({
@@ -866,13 +822,9 @@ async function init() {
   });
 
 
-  var eleven_quadrillion_gltf = await modelLoader('/11_87Q.glb');
+  eleven_quadrillion = value_to_cube(11000000000000000);
 
-  eleven_quadrillion = eleven_quadrillion_gltf.scene;
-
-  eleven_quadrillion.position.x = 42500;
-  eleven_quadrillion.rotation.x = -Math.PI / 2;
-
+  eleven_quadrillion.position.x = 43500;
   scene.add(eleven_quadrillion);
 
   objects.push({
@@ -957,105 +909,110 @@ const animate = () => {
   }
 
   if (eighty_million) {
-    eighty_million.rotation.z += 0.005;
+    eighty_million.rotation.y += 0.005;
   }
 
   if (human_1) {
     human_1.rotation.z += 0.01;
   }
   if (four_forty_million) {
-    four_forty_million.rotation.z += 0.005;
+    four_forty_million.rotation.y += 0.005;
   }
   if (one_p_four_billion) {
-    one_p_four_billion.rotation.z += 0.005;
+    one_p_four_billion.rotation.y += 0.005;
   }
   if (one_p_eight_billion) {
-    one_p_eight_billion.rotation.z += 0.005;
+    one_p_eight_billion.rotation.y += 0.005;
   }
   if (seventy_billion) {
-    seventy_billion.rotation.z += 0.005;
+    seventy_billion.rotation.y += 0.005;
   }
   if (ninety_five_billion) {
-    ninety_five_billion.rotation.z += 0.005;
+    ninety_five_billion.rotation.y += 0.005;
   }
   if (one_thirty_four_billion) {
-    one_thirty_four_billion.rotation.z += 0.005;
+    one_thirty_four_billion.rotation.y += 0.005;
   }
 
   if (one_ninety_billion) {
-    one_ninety_billion.rotation.z += 0.005;
+    one_ninety_billion.rotation.y += 0.005;
   }
 
   if (two_hundred_one_billion) {
-    two_hundred_one_billion.rotation.z += 0.005;
+    two_hundred_one_billion.rotation.y += 0.005;
   }
 
   if (two_hundred_nine_billion) {
-    two_hundred_nine_billion.rotation.z += 0.005;
+    two_hundred_nine_billion.rotation.y += 0.005;
   }
 
   if (two_hundred_seventy_three_billion) {
-    two_hundred_seventy_three_billion.rotation.z += 0.005;
+    two_hundred_seventy_three_billion.rotation.y += 0.005;
   }
 
   if (seven_hundred_five_billion) {
-    seven_hundred_five_billion.rotation.z += 0.005;
+    seven_hundred_five_billion.rotation.y += 0.005;
   }
 
   if (one_p_three_trillion) {
-    one_p_three_trillion.rotation.z += 0.005;
+    one_p_three_trillion.rotation.y += 0.005;
   }
 
-  if (one_p_seven_five_trillion) {
-    one_p_seven_five_trillion.rotation.z += 0.005;
+  if (one_p_seven_four_trillion) {
+    one_p_seven_four_trillion.rotation.y += 0.005;
   }
 
   if (two_p_one_trillion) {
-    two_p_one_trillion.rotation.z += 0.005;
+    two_p_one_trillion.rotation.y += 0.005;
   }
 
   if (three_p_four_trillion) {
-    three_p_four_trillion.rotation.z += 0.005;
+    three_p_four_trillion.rotation.y += 0.005;
   }
 
   if (four_p_five_trillion) {
-    four_p_five_trillion.rotation.z += 0.005;
+    four_p_five_trillion.rotation.y += 0.005;
   }
 
+  if(liberty){
+    liberty.rotation.y += 0.005;
+  }
+
+  // texture upper limit, all textures from here and above will use the same texture
   if (twenty_one_p_eigthy_five_trillion) {
-    twenty_one_p_eigthy_five_trillion.rotation.z += 0.005;
+    twenty_one_p_eigthy_five_trillion.rotation.y += 0.005;
   }
 
   if (twenty_eight_p_fifty_trillion) {
-    twenty_eight_p_fifty_trillion.rotation.z += 0.005;
+    twenty_eight_p_fifty_trillion.rotation.y += 0.005;
   }
 
   if (thirty_three_trillion) {
-    thirty_three_trillion.rotation.z += 0.005;
+    thirty_three_trillion.rotation.y += 0.005;
   }
 
   if (thirty_four_trillion) {
-    thirty_four_trillion.rotation.z += 0.005;
+    thirty_four_trillion.rotation.y += 0.005;
   }
 
   if (forty_three_trillion) {
-    forty_three_trillion.rotation.z += 0.005;
+    forty_three_trillion.rotation.y += 0.005;
   }
 
   if (forty_eight_trillion) {
-    forty_eight_trillion.rotation.z += 0.005;
+    forty_eight_trillion.rotation.y += 0.005;
   }
 
   if (three_hundred_sixty_trillion) {
-    three_hundred_sixty_trillion.rotation.z += 0.005;
+    three_hundred_sixty_trillion.rotation.y += 0.005;
   }
 
   if (one_quadrillion) {
-    one_quadrillion.rotation.z += 0.005;
+    one_quadrillion.rotation.y += 0.005;
   }
 
   if (eleven_quadrillion) {
-    eleven_quadrillion.rotation.z += 0.005;
+    eleven_quadrillion.rotation.y += 0.005;
   }
 
 };
@@ -1068,7 +1025,7 @@ animate();
 
 $(document).on('keyup', function (event) {
 
-  if (event.keyCode === 39 && index < objects.length - 1) {
+  if (event.keyCode === 39 && index < objects.length) {
     index++;
   } else if (event.keyCode === 37 && index > 0) {
     index--;
@@ -1083,11 +1040,22 @@ $(document).on('keyup', function (event) {
 
 function canvasAnimate() {
 
-  if (index > 0) {
+  if (index == objects.length) {
+    $(".end-page").css("left", "0px");
+  } else if (index > 0) {
     $(".title-page").css("left", "-100%");
+    $(".end-page").css("left", "100%");
     $(".item-title").text(objects[index].title);
     $(".item-description").text(objects[index].description);
-    let y = objects[index].camera_position.y;
+
+    let object = objects[index].object;
+    var y; 
+    if(objects[index].camera_position.y != 0) {
+      y = objects[index].camera_position.y
+    }else{
+      y = object.position.y;
+    }
+
     let z = objects[index].camera_position.z;
 
     // arbitrary pixel cutoff to move the camera back
@@ -1097,7 +1065,7 @@ function canvasAnimate() {
       z = z * 1.5;
     }
 
-    let object = objects[index].object;
+
 
     let x = object.position.x;
 
@@ -1180,7 +1148,7 @@ function touchMove(event) {
 
 function touchEnd(event) {
 
-  if (currentTranslate < -50 && index < objects.length - 1) {
+  if (currentTranslate < -50 && index < objects.length) {
     index += 1;
   }
 

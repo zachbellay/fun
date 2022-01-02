@@ -5,6 +5,9 @@ import cv2
 import click
 
 
+texture_size = (512, 512)
+
+
 def human_format(num):
     magnitude = 0
     while abs(num) >= 1000:
@@ -15,15 +18,11 @@ def human_format(num):
     output = output.replace(".", "_")
     return output
 
-
 def trim(im):
+    im_mask = Image.fromarray(np.ma.where(im >= 0, 255, 0).astype(np.uint8))
     im = Image.fromarray(im.astype(np.uint8))
-    bg = Image.new(im.mode, im.size, -1)
-    diff = ImageChops.difference(im, bg)
-    diff = ImageChops.add(diff, diff, 2.0, -100)
-    bbox = diff.getbbox()
-    if bbox:
-        return np.asarray(im.crop(bbox))
+    bbox = im_mask.getbbox()
+    return np.asarray(im.crop(bbox))
 
 
 @click.command()
@@ -33,7 +32,7 @@ def trim(im):
 )
 @click.option(
     "--output",
-    default="../blender/imgs",
+    default="../public/",
 )
 def generate_texture(value, imgs, output):
 
@@ -55,16 +54,19 @@ def generate_texture(value, imgs, output):
     h = min(round(alpha / height), upper_limit)
     d = min(round(alpha / depth), upper_limit)
 
+    if l == upper_limit and h == upper_limit and d == upper_limit:
+        print("UPPER LIMIT REACHED!")
+
     front = np.asarray(Image.open(f"{imgs}/front.jpg"))
     back = np.asarray(Image.open(f"{imgs}/back.jpg"))
     side = np.asarray(Image.open(f"{imgs}/side.jpg"))
 
     # generate texture for front
-    front_bills_x = max(int(1024 / l), 1)
-    front_bills_y = max(int(1024 / h), 1)
+    front_bills_x = max(int(texture_size[0] / l), 1)
+    front_bills_y = max(int(texture_size[0] / h), 1)
     front_scaled = cv2.resize(front, (max(front_bills_x, 1), max(front_bills_y, 1)))
 
-    front_layer = np.dstack([np.full((1024, 1024), -1) for _ in range(3)])
+    front_layer = np.dstack([np.full(texture_size, -1) for _ in range(3)])
 
     for i in range(l):
         for j in range(h):
@@ -75,17 +77,15 @@ def generate_texture(value, imgs, output):
             ] = front_scaled
 
     front_layer = trim(front_layer)
-    front_layer = cv2.resize(front_layer, (1024, 1024))
+    front_layer = cv2.resize(front_layer, texture_size)
 
     # generate texture for back
 
-    back_bills_x = max(int(1024 / l), 1)
-    back_bills_y = max(int(1024 / h), 1)
-    print(back_bills_x, back_bills_y)
+    back_bills_x = max(int(texture_size[0] / l), 1)
+    back_bills_y = max(int(texture_size[0] / h), 1)
     back_scaled = cv2.resize(back, (back_bills_x, back_bills_y))
-    print(back_scaled.shape)
 
-    back_layer = np.dstack([np.full((1024, 1024), -1) for _ in range(3)])
+    back_layer = np.dstack([np.full(texture_size, -1) for _ in range(3)])
 
     for i in range(l):
         for j in range(h):
@@ -96,15 +96,15 @@ def generate_texture(value, imgs, output):
             ] = back_scaled
 
     back_layer = trim(back_layer)
-    back_layer = cv2.resize(back_layer, (1024, 1024))
+    back_layer = cv2.resize(back_layer, texture_size)
 
     # generate texture for side
 
-    side_bills_x = max(int(1024 / d), 1)
+    side_bills_x = max(int(texture_size[0] / d), 1)
     side_bills_y = max(int(2048 / h), 1)
     side_scaled = cv2.resize(side, (side_bills_x, side_bills_y))
 
-    side_layer = np.dstack([np.full((2048, 1024), -1) for _ in range(3)])
+    side_layer = np.dstack([np.full((2048, texture_size[0]), -1) for _ in range(3)])
 
     for i in range(d):
         for j in range(h):
@@ -115,20 +115,22 @@ def generate_texture(value, imgs, output):
             ] = side_scaled
 
     side_layer = trim(side_layer)
-    side_layer = cv2.resize(side_layer, (1024, 2048))
+    side_layer = cv2.resize(side_layer, texture_size)
 
-    # collate all three textures
-
-    texture = np.dstack([np.full((2048, 2048), 255) for _ in range(3)])
-    texture[0:1024, 0:1024, :] = front_layer
-    texture[1024:, 0:1024, :] = back_layer
-    texture[:, 1024:, :] = side_layer
-
-    Image.fromarray(texture.astype(np.uint8)).save(
-        f"{output}/{human_format(value)}.jpg"
+    Image.fromarray(front_layer.astype(np.uint8)).save(
+        f"{output}/{human_format(value)}_front.jpg"
     )
+    print(f"Image saved to {output}/{human_format(value)}_front.jpg")
 
-    print(f"Image saved to {output}/{human_format(value)}.jpg")
+    Image.fromarray(back_layer.astype(np.uint8)).save(
+        f"{output}/{human_format(value)}_back.jpg"
+    )
+    print(f"Image saved to {output}/{human_format(value)}_back.jpg")
+
+    Image.fromarray(side_layer.astype(np.uint8)).save(
+        f"{output}/{human_format(value)}_side.jpg"
+    )
+    print(f"Image saved to {output}/{human_format(value)}_side.jpg")
 
 
 if __name__ == "__main__":

@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
+  
+  <meta charset="UTF-8" name="viewport" content="initial-scale=1, user-scalable=no">
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -19,15 +19,15 @@
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8J0TL3T3C"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8J0TL3T3C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-        gtag('config', 'G-M8J0TL3T3C');
-    </script>
+    gtag('config', 'G-M8J0TL3T3C');
+  </script>
 
   <link rel="stylesheet" href="/style.css" />
 
@@ -50,11 +50,13 @@
     </div>
 
     <div class="title-page">
-      <div class="video-bg">
+
+      <!-- <div class="video-bg">
+
         <video autoplay loop muted>
           <source src="videos/money.mp4" type="video/mp4">
         </video>
-      </div>
+      </div> -->
 
       <a class="main-page-link" href="https://zach.ws">zach.ws</a>
       <div class="video-overlay container h-100">
@@ -72,6 +74,61 @@
       <h5 class="go-right">Press the right arrow key or swipe left to continue ➔</h5>
 
     </div>
+
+
+    <div class="end-page" style="left: 100%;">
+      <a class="main-page-link" href="https://zach.ws">zach.ws</a>
+      <!-- <div class="video-bg">
+        <video autoplay loop muted>
+          <source src="videos/money.mp4" type="video/mp4">
+        </video>
+      </div> -->
+      <div class=" h-100 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+          <h4 class="subtitle-font">The Scale of Wealth</h4>
+          <div class="subtitle-font-2">
+            Made with ❤️ and
+
+            <svg style="height: 0.9em; vertical-align: -.125em;" aria-hidden="true" focusable="false" data-prefix="fas"
+              data-icon="code" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg="">
+              <defs>
+                <filter id="dropshadow" x="0" y="0" width="200%" height="200%">
+                  <feOffset result="offOut" in="SourceAlpha" dx="0" dy="0" />
+                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="30" />
+                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                </filter>
+              </defs>
+              <path fill="currentColor"
+                d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"
+                filter="url(#dropshadow)"></path>
+            </svg>
+            by Zach Bellay
+          </div>
+          <div class="subtitle-font-2">
+            Check out more visualizations at
+          </div>
+          <div class="pt-4"
+            style="display: flex; align-items: center;  justify-content: center; flex-direction: row; position: relative;">
+            <a href="https://zach.ws" style="  color: #fff;
+            font-size: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 1000;
+            transition: opacity .3s;
+            text-shadow: 1px 1px 2px #000,-1px -1px 2px #000;">zach.ws!</a>
+            <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; right: -10px; animation: arrowAnimation 10s ease 0s infinite normal forwards;" width="150" height="100"
+              fill="white" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+            </svg>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 
 
